@@ -1,3 +1,4 @@
+from json.encoder import ESCAPE
 import pygame as pg
 
 from arkanoid import ALTO, ANCHO
@@ -7,6 +8,7 @@ class Arkanoid:
         print("Arranca el juego")
         pg.init()
         self.display = pg.display.set_mode((ANCHO,ALTO))
+        pg.display.set_caption("Keepkanoid")
 
     def jugar(self):
         """Este es el bucle principal"""
@@ -15,7 +17,11 @@ class Arkanoid:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     salir = True
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_ESCAPE:
+                        salir = True
                 self.display.fill((99,99,99))
                 pg.display.flip()
+
                 
 
