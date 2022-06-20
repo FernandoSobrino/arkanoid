@@ -59,4 +59,9 @@ pip install -r requirements-dev.txt
 code . 
 ```
 
+## Atribuciones
+
+El icono de la aplicación usada está creado por Freepik. 
+
+<a href = "https://www.flaticon.es/icono-premium/apestar_2140234?term=arkanoid&page=1&position=22&page=1&position=22&related_id=2140234&origin=search" title:"arkanoid iconos"> Arkanoid iconos creados por Freepik - Flaticon</a>
 
