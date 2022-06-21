@@ -2,7 +2,7 @@ import os
 
 import pygame as pg
 
-from . import ANCHO, ALTO, COLOR_BLANCO
+from . import ANCHO, ALTO, COLOR_BLANCO, COLOR_FONDO_PORTADA
 
 
 class Escena:
@@ -31,7 +31,7 @@ class Portada(Escena):
                         salir = True
                 if event.type == pg.QUIT:
                     pg.quit()
-            self.pantalla.fill((99, 0, 0))
+            self.pantalla.fill((COLOR_FONDO_PORTADA))
             
             self.pintar_logo()
             self.pintar_texto()
@@ -54,6 +54,11 @@ class Portada(Escena):
 
 
 class Partida(Escena):
+    def __init__(self,pantalla: pg.Surface):
+        super().__init__(pantalla)
+        bg_file = os.path.join("resources", "images", "background.jpg")
+        self.fondo = pg.image.load(bg_file)
+
     def bucle_principal(self):
         salir = False
         while not salir:
@@ -61,7 +66,12 @@ class Partida(Escena):
                 if event.type == pg.QUIT:
                     pg.quit()
             self.pantalla.fill((0, 99, 0))
+            self.pintar_fondo()
             pg.display.flip()
+
+    def pintar_fondo(self):
+        self.pantalla.blit(self.fondo,(0,0))
+        self.pantalla.blit(self.fondo,(600,0))
 
 
 class HallOfFame(Escena):
