@@ -3,7 +3,7 @@ import os
 import pygame as pg
 
 from arkanoid import ALTO, ANCHO
-from arkanoid.escenas import Portada,Partida,HallOfFame
+from arkanoid.escenas import Portada, Partida, HallOfFame
 
 
 class Arkanoid:
@@ -12,8 +12,8 @@ class Arkanoid:
         pg.init()
         self.display = pg.display.set_mode((ANCHO, ALTO))
         pg.display.set_caption("Fernanoid")
-        
-        icon = pg.image.load(os.path.join("resources","images","icon.png"))
+        game_logo_path = os.path.join("resources", "images", "icon.png")
+        icon = pg.image.load(game_logo_path)
         pg.display.set_icon(icon)
 
         self.escenas = [
