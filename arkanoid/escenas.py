@@ -3,7 +3,7 @@ import os
 import pygame as pg
 
 from . import ANCHO, ALTO, COLOR_BLANCO, COLOR_FONDO_PORTADA,FPS
-from .entidades import Raqueta
+from .entidades import Raqueta, Ladrillo
 
 
 class Escena:
@@ -61,6 +61,7 @@ class Partida(Escena):
         bg_file = os.path.join("resources", "images", "background.jpg")
         self.fondo = pg.image.load(bg_file)
         self.jugador = Raqueta()
+        self.crear_muro()
 
     def bucle_principal(self):
         salir = False
@@ -72,13 +73,30 @@ class Partida(Escena):
                     pg.quit()
             self.pintar_fondo()
             
-            self.pantalla.blit(self.jugador.image,self.jugador.rect)
+            #pintar la raqueta
             self.jugador.update()
+            self.pantalla.blit(self.jugador.image,self.jugador.rect)
             
+            #pintar el muro
+
             pg.display.flip()
 
     def pintar_fondo(self):
         self.pantalla.blit(self.fondo, (0, 0))
+
+    def crear_muro(self):
+        num_filas = 5
+        num_columnas = 4
+        self.ladrillos = []
+
+        for fila in range(num_filas):
+            for columna in range(num_columnas):
+                ladrillo = Ladrillo(columna,fila)
+                
+                self.ladrillos.append(ladrillo)
+
+
+        
 
 
 class HallOfFame(Escena):
