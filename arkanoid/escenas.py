@@ -78,7 +78,7 @@ class Partida(Escena):
             self.pantalla.blit(self.jugador.image,self.jugador.rect)
             
             #pintar el muro
-
+            self.ladrillos.draw(self.pantalla)
             pg.display.flip()
 
     def pintar_fondo(self):
@@ -86,14 +86,19 @@ class Partida(Escena):
 
     def crear_muro(self):
         num_filas = 5
-        num_columnas = 4
-        self.ladrillos = []
+        num_columnas = 6
+        self.ladrillos = pg.sprite.Group()
+        self.ladrillos.empty()
+        margen_y = 40
+        
 
         for fila in range(num_filas):
             for columna in range(num_columnas):
-                ladrillo = Ladrillo(columna,fila)
-                
-                self.ladrillos.append(ladrillo)
+                ladrillo = Ladrillo(fila,columna)
+                margen_x = (ANCHO - ladrillo.image.get_width()*num_columnas) / 2 
+                ladrillo.rect.x += margen_x
+                ladrillo.rect.y += margen_y
+                self.ladrillos.add(ladrillo)
 
 
         

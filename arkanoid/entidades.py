@@ -60,6 +60,6 @@ class Ladrillo(Sprite):
         ladrillo_verde = os.path.join("resources","images","greenTile.png")
 
         self.image = pg.image.load(ladrillo_verde)
-        ancho = self.image.get_width()
-        alto = self.image.get_height()
-        self.rect = self.image.get_rect(x=fila*ancho,y=columna*alto)
+        ancho_ladrillo = self.image.get_width()
+        alto_ladrillo = self.image.get_height()
+        self.rect = self.image.get_rect(x=columna*ancho_ladrillo,y=fila*alto_ladrillo)
