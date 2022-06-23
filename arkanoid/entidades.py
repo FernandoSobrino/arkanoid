@@ -35,10 +35,14 @@ class Raqueta(Sprite):
         if self.contador > 2:
             self.contador = 0
         
-        tecla = pg.key.get_pressed()
-        if tecla[pg.K_RIGHT]:
+        tecla_mov_raqueta = pg.key.get_pressed()
+        if tecla_mov_raqueta[pg.K_RIGHT]:
             self.rect.x += self.velocidad
-        if tecla[pg.K_LEFT]:
+            if self.rect.right > ANCHO:
+                self.rect.right = ANCHO
+        if tecla_mov_raqueta[pg.K_LEFT]:
             self.rect.x -= self.velocidad
+            if self.rect.left < 0:
+                self.rect.left = 0
 
 
