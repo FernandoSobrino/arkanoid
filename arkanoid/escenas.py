@@ -66,13 +66,15 @@ class Partida(Escena):
         salir = False
         while not salir:
             self.reloj.tick(FPS)
-            self.jugador.update()
             
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     pg.quit()
             self.pintar_fondo()
+            
             self.pantalla.blit(self.jugador.image,self.jugador.rect)
+            self.jugador.update()
+            
             pg.display.flip()
 
     def pintar_fondo(self):
