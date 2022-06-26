@@ -3,7 +3,7 @@ import os
 import pygame as pg
 from pygame.sprite import Sprite
 
-from . import ALTO, ANCHO, FPS
+from . import ALTO, ANCHO, FPS, COLOR_BLANCO
 
 
 class Raqueta(Sprite):
@@ -66,6 +66,9 @@ class Ladrillo(Sprite):
 
 
 class Pelota(Sprite):
+    velocidad_x = -5
+    velocidad_y = -5
+
     def __init__(self,**kwargs):
         super().__init__()
         self.image = pg.image.load(os.path.join("resources", "images", "ball1.png"))
@@ -74,4 +77,27 @@ class Pelota(Sprite):
     def update(self,raqueta,juego_iniciado):
         if not juego_iniciado:
             self.rect = self.image.get_rect(midbottom=raqueta.rect.midtop)
+        else:
+            self.rect.x += self.velocidad_x
+            if self.rect.right > ANCHO or self.rect.left < 0:
+                self.velocidad_x = -self.velocidad_x
+            self.rect.y += self.velocidad_y
+            if self.rect.top <= 0:
+                self.velocidad_y = -self.velocidad_y
 
+    
+    def hay_colision(self,otro):
+        if self.rect.colliderect(otro):
+            self.velocidad_y = - self.velocidad_y
+    
+
+class Marcador:
+    def __init__(self):
+        self.puntos_marcador = 0
+        font_file = os.path.join("resources", "fonts", "CabinSketch-Bold.ttf")
+        self.tipografia = pg.font.Font(font_file, 30)
+
+    def pintar_marcador(self,pantalla):
+        texto_marcador = f"Puntos: {self.puntos_marcador}"
+        texto = self.tipografia.render(str(texto_marcador),True,COLOR_BLANCO)
+        pg.surface.Surface.blit(pantalla,texto,(400,600))
