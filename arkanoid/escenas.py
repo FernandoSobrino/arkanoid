@@ -3,7 +3,7 @@ import os
 import pygame as pg
 
 from . import ANCHO, ALTO, COLOR_BLANCO, COLOR_FONDO_PORTADA, FPS, VIDAS
-from .entidades import Raqueta, Ladrillo, Pelota, Marcador, ContadorVidas
+from .entidades import ContadorVidas, Ladrillo, Marcador, Pelota, Raqueta
 
 
 class Escena:
@@ -92,21 +92,19 @@ class Partida(Escena):
             self.pelota.update(self.jugador, pelota_en_movimiento)
             self.pantalla.blit(self.pelota.image, self.pelota.rect)
 
+            # pintar el muro
+            self.ladrillos.draw(self.pantalla)
+
             # lo que comprueba la colision con la paleta y con los ladrillos
             self.pelota.hay_colision(self.jugador)
             self.golpeados = pg.sprite.spritecollide(
                 self.pelota, self.ladrillos, True)
             if len(self.golpeados) > 0:
                 self.pelota.velocidad_y *= -1
-                for ladrillos in self.golpeados:
-                    self.marcador.puntos_marcador += 1
+                for ladrillo in self.golpeados:
+                    self.marcador.aumentar(ladrillo.puntos)
+                
 
-            # esto es una solución para volver a cargar el muro (pero raruna, no me gusta)
-            if not self.ladrillo in self.ladrillos:
-                self.crear_muro()
-
-            # pintar el muro
-            self.ladrillos.draw(self.pantalla)
             
             #recargar todos los cambios
             pg.display.flip()
@@ -116,6 +114,11 @@ class Partida(Escena):
                 salir = self.contador_vidas.perder_vida()
                 pelota_en_movimiento = False
                 self.pelota.he_perdido = False
+
+            # volver a pintar el muro cuando se acaban los ladrillos
+            if len(self.ladrillos.sprites()) == 0:
+                self.crear_muro()
+
             
 
     # método para crear el muro de ladrillos
@@ -127,15 +130,15 @@ class Partida(Escena):
         margen_y = 40
 
         for fila in range(num_filas):
+            puntos = (num_filas - fila)*10
             for columna in range(num_columnas):
-                self.ladrillo = Ladrillo(fila, columna)
+                self.ladrillo = Ladrillo(fila, columna,puntos)
                 margen_x = (ANCHO - self.ladrillo.image.get_width()
                             * num_columnas) / 2
                 self.ladrillo.rect.x += margen_x
                 self.ladrillo.rect.y += margen_y
                 self.ladrillos.add(self.ladrillo)
 
-    
 
     # método para insertar la imagen azul en el fondo de la partida
     def pintar_fondo(self):

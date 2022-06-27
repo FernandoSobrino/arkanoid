@@ -8,7 +8,7 @@ from . import ALTO, ALTO_MARCADORES, ANCHO, FPS, COLOR_BLANCO, MARGEN_LATERAL
 
 class Raqueta(Sprite):
     velocidad = 5
-    margen_inferior = 20
+    margen_inferior = 50
     fps_animacion = 12
     limite_iteracion = FPS // fps_animacion
     iteracion = 0
@@ -53,7 +53,7 @@ class Raqueta(Sprite):
 
 
 class Ladrillo(Sprite):
-    def __init__(self, fila, columna):
+    def __init__(self, fila, columna,puntuacion):
         super().__init__()
 
         ladrillo_verde = os.path.join("resources", "images", "greenTile.png")
@@ -61,6 +61,7 @@ class Ladrillo(Sprite):
         self.image = pg.image.load(ladrillo_verde)
         ancho_ladrillo = self.image.get_width()
         alto_ladrillo = self.image.get_height()
+        self.puntos = puntuacion
         self.rect = self.image.get_rect(
             x=columna*ancho_ladrillo, y=fila*alto_ladrillo)
 
@@ -69,6 +70,7 @@ class Pelota(Sprite):
     velocidad_x = -5
     velocidad_y = -5
     he_perdido = False
+    pelota_en_movimiento = False
 
     def __init__(self, **kwargs):
         super().__init__()
@@ -93,35 +95,39 @@ class Pelota(Sprite):
         if self.rect.colliderect(otro):
             self.velocidad_y = - self.velocidad_y
     
-    
-
 
 class Marcador:
     def __init__(self):
-        self.puntos_marcador = 0
-        font_file = os.path.join("resources", "fonts", "CabinSketch-Bold.ttf")
-        self.tipografia = pg.font.Font(font_file, 30)
+        self.valor = 0
+        font_file = os.path.join("resources", "fonts", "LibreFranklin-VariableFont_wght.ttf")
+        self.tipografia = pg.font.Font(font_file, 20)
+
+    def aumentar(self,puntos):
+        self.valor += puntos
 
     def pintar_marcador(self, pantalla):
-        texto_marcador = f"Puntos: {self.puntos_marcador}"
+        texto_marcador = f"Puntos: {self.valor}"
         texto = self.tipografia.render(str(texto_marcador), True, COLOR_BLANCO)
-        pos_x = texto.get_width()
-        pg.surface.Surface.blit(pantalla, texto, (pos_x-MARGEN_LATERAL,ALTO_MARCADORES))
+        pos_x = 20
+        pos_y = ALTO-texto.get_height()-10
+        pg.surface.Surface.blit(pantalla, texto, (MARGEN_LATERAL,pos_y))
+
 
 class ContadorVidas:
     def __init__(self,vidas_iniciales):
         self.vidas = vidas_iniciales
-        font_file = os.path.join("resources", "fonts", "CabinSketch-Bold.ttf")
-        self.tipografia = pg.font.Font(font_file, 30)
+        font_file = os.path.join("resources", "fonts",
+                                 "LibreFranklin-VariableFont_wght.ttf")
+        self.tipografia = pg.font.Font(font_file, 20)
 
     def perder_vida(self):
         self.vidas -= 1
         return self.vidas < 1
 
-
     def pintar_marcador_vidas(self,pantalla):
         texto_marcador_vidas = f"Vidas: {self.vidas}"
         texto = self.tipografia.render(str(texto_marcador_vidas),True,COLOR_BLANCO)
         pos_x = texto.get_width()
-        pg.surface.Surface.blit(pantalla,texto,(ANCHO-pos_x-MARGEN_LATERAL,ALTO_MARCADORES))
+        pos_y = ALTO -texto.get_height()-10
+        pg.surface.Surface.blit(pantalla,texto,(ANCHO-pos_x-MARGEN_LATERAL,pos_y))
 
