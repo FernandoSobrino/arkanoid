@@ -104,8 +104,6 @@ class Partida(Escena):
                 for ladrillo in self.golpeados:
                     self.marcador.aumentar(ladrillo.puntos)
                 
-
-            
             #recargar todos los cambios
             pg.display.flip()
 
@@ -118,8 +116,6 @@ class Partida(Escena):
             # volver a pintar el muro cuando se acaban los ladrillos
             if len(self.ladrillos.sprites()) == 0:
                 self.crear_muro()
-
-            
 
     # método para crear el muro de ladrillos
     def crear_muro(self):
