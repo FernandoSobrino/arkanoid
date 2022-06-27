@@ -2,8 +2,8 @@ import os
 
 import pygame as pg
 
-from . import ANCHO, ALTO, COLOR_BLANCO, COLOR_FONDO_PORTADA, FPS
-from .entidades import Raqueta, Ladrillo, Pelota, Marcador
+from . import ANCHO, ALTO, COLOR_BLANCO, COLOR_FONDO_PORTADA, FPS, VIDAS
+from .entidades import Raqueta, Ladrillo, Pelota, Marcador, ContadorVidas
 
 
 class Escena:
@@ -62,15 +62,12 @@ class Partida(Escena):
         self.jugador = Raqueta()
         self.pelota = Pelota(midbottom=self.jugador.rect.midtop)
         self.marcador = Marcador()
+        self.contador_vidas = ContadorVidas(VIDAS)
         self.crear_muro()
-        self.contador_vidas = 3
-        #font_file = os.path.join("resources", "fonts", "CabinSketch-Bold.ttf")
-        #self.tipografia = pg.font.Font(font_file, 30)
-        #self.marcador = 0
 
     def bucle_principal(self):
         salir = False
-        partida_iniciada = False
+        pelota_en_movimiento = False
 
         while not salir:
             self.reloj.tick(FPS)
@@ -79,17 +76,20 @@ class Partida(Escena):
                 if event.type == pg.QUIT:
                     pg.quit()
                 if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                    partida_iniciada = True
+                    pelota_en_movimiento = True
 
             self.pintar_fondo()
+
+            # pintar los marcadores: puntos y vidas
             self.marcador.pintar_marcador(self.pantalla)
+            self.contador_vidas.pintar_marcador_vidas(self.pantalla)
 
             # pintar la raqueta
             self.jugador.update()
             self.pantalla.blit(self.jugador.image, self.jugador.rect)
 
             # pintar la pelota
-            self.pelota.update(self.jugador, partida_iniciada)
+            self.pelota.update(self.jugador, pelota_en_movimiento)
             self.pantalla.blit(self.pelota.image, self.pelota.rect)
 
             # lo que comprueba la colision con la paleta y con los ladrillos
@@ -101,27 +101,24 @@ class Partida(Escena):
                 for ladrillos in self.golpeados:
                     self.marcador.puntos_marcador += 1
 
-            self.cuenta_vidas()
-
-            if self.contador_vidas == 0:
-                salir = True
-                print("El juego se ha acabado")
+            # esto es una solución para volver a cargar el muro (pero raruna, no me gusta)
+            if not self.ladrillo in self.ladrillos:
+                self.crear_muro()
 
             # pintar el muro
             self.ladrillos.draw(self.pantalla)
+            
+            #recargar todos los cambios
             pg.display.flip()
 
-    def cuenta_vidas(self):
-        if self.pelota.rect.bottom > ALTO:
-            partida_iniciada = False
-            self.contador_vidas -= 1
-            print(f"Número de vidas: {self.contador_vidas}")
-            self.pelota.update(self.jugador, partida_iniciada)
-            self.pantalla.blit(self.pelota.image, self.pelota.rect)
+            # parte para comprobar que la pelota se sale de la pantalla, restar vida e iniciar la pelota
+            if self.pelota.he_perdido:
+                salir = self.contador_vidas.perder_vida()
+                pelota_en_movimiento = False
+                self.pelota.he_perdido = False
+            
 
-    def pintar_fondo(self):
-        self.pantalla.blit(self.fondo, (0, 0))
-
+    # método para crear el muro de ladrillos
     def crear_muro(self):
         num_filas = 5
         num_columnas = 6
@@ -131,12 +128,18 @@ class Partida(Escena):
 
         for fila in range(num_filas):
             for columna in range(num_columnas):
-                ladrillo = Ladrillo(fila, columna)
-                margen_x = (ANCHO - ladrillo.image.get_width()
+                self.ladrillo = Ladrillo(fila, columna)
+                margen_x = (ANCHO - self.ladrillo.image.get_width()
                             * num_columnas) / 2
-                ladrillo.rect.x += margen_x
-                ladrillo.rect.y += margen_y
-                self.ladrillos.add(ladrillo)
+                self.ladrillo.rect.x += margen_x
+                self.ladrillo.rect.y += margen_y
+                self.ladrillos.add(self.ladrillo)
+
+    
+
+    # método para insertar la imagen azul en el fondo de la partida
+    def pintar_fondo(self):
+        self.pantalla.blit(self.fondo, (0, 0))
 
 
 class HallOfFame(Escena):

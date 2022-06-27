@@ -3,7 +3,7 @@ import os
 import pygame as pg
 from pygame.sprite import Sprite
 
-from . import ALTO, ANCHO, FPS, COLOR_BLANCO
+from . import ALTO, ALTO_MARCADORES, ANCHO, FPS, COLOR_BLANCO, MARGEN_LATERAL
 
 
 class Raqueta(Sprite):
@@ -68,13 +68,15 @@ class Ladrillo(Sprite):
 class Pelota(Sprite):
     velocidad_x = -5
     velocidad_y = -5
+    he_perdido = False
 
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         super().__init__()
-        self.image = pg.image.load(os.path.join("resources", "images", "ball1.png"))
+        self.image = pg.image.load(os.path.join(
+            "resources", "images", "ball1.png"))
         self.rect = self.image.get_rect(**kwargs)
 
-    def update(self,raqueta,juego_iniciado):
+    def update(self, raqueta, juego_iniciado):
         if not juego_iniciado:
             self.rect = self.image.get_rect(midbottom=raqueta.rect.midtop)
         else:
@@ -84,12 +86,15 @@ class Pelota(Sprite):
             self.rect.y += self.velocidad_y
             if self.rect.top <= 0:
                 self.velocidad_y = -self.velocidad_y
+            if self.rect.top > ALTO:
+                self.he_perdido = True
 
-    
-    def hay_colision(self,otro):
+    def hay_colision(self, otro):
         if self.rect.colliderect(otro):
             self.velocidad_y = - self.velocidad_y
     
+    
+
 
 class Marcador:
     def __init__(self):
@@ -97,7 +102,26 @@ class Marcador:
         font_file = os.path.join("resources", "fonts", "CabinSketch-Bold.ttf")
         self.tipografia = pg.font.Font(font_file, 30)
 
-    def pintar_marcador(self,pantalla):
+    def pintar_marcador(self, pantalla):
         texto_marcador = f"Puntos: {self.puntos_marcador}"
-        texto = self.tipografia.render(str(texto_marcador),True,COLOR_BLANCO)
-        pg.surface.Surface.blit(pantalla,texto,(400,600))
+        texto = self.tipografia.render(str(texto_marcador), True, COLOR_BLANCO)
+        pos_x = texto.get_width()
+        pg.surface.Surface.blit(pantalla, texto, (pos_x-MARGEN_LATERAL,ALTO_MARCADORES))
+
+class ContadorVidas:
+    def __init__(self,vidas_iniciales):
+        self.vidas = vidas_iniciales
+        font_file = os.path.join("resources", "fonts", "CabinSketch-Bold.ttf")
+        self.tipografia = pg.font.Font(font_file, 30)
+
+    def perder_vida(self):
+        self.vidas -= 1
+        return self.vidas < 1
+
+
+    def pintar_marcador_vidas(self,pantalla):
+        texto_marcador_vidas = f"Vidas: {self.vidas}"
+        texto = self.tipografia.render(str(texto_marcador_vidas),True,COLOR_BLANCO)
+        pos_x = texto.get_width()
+        pg.surface.Surface.blit(pantalla,texto,(ANCHO-pos_x-MARGEN_LATERAL,ALTO_MARCADORES))
+
