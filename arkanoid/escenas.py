@@ -2,8 +2,11 @@ import os
 
 import pygame as pg
 
-from . import ANCHO, ALTO, COLOR_BLANCO, COLOR_FONDO_PORTADA, FPS, VIDAS
+from inputbox.inputbox import InputBox
+
+from . import ANCHO, ALTO, COLOR_BLANCO, COLOR_FONDO_PORTADA, FPS, PUNTOS_PARTIDA, VIDAS
 from .entidades import ContadorVidas, Ladrillo, Marcador, Pelota, Raqueta
+from .records import Records
 
 
 class Escena:
@@ -103,8 +106,8 @@ class Partida(Escena):
                 self.pelota.velocidad_y *= -1
                 for ladrillo in self.golpeados:
                     self.marcador.aumentar(ladrillo.puntos)
-                
-            #recargar todos los cambios
+
+            # recargar todos los cambios
             pg.display.flip()
 
             # parte para comprobar que la pelota se sale de la pantalla, restar vida e iniciar la pelota
@@ -112,10 +115,14 @@ class Partida(Escena):
                 salir = self.contador_vidas.perder_vida()
                 pelota_en_movimiento = False
                 self.pelota.he_perdido = False
+            if salir:
+                self.comprobar_record()
 
             # volver a pintar el muro cuando se acaban los ladrillos
             if len(self.ladrillos.sprites()) == 0:
                 self.crear_muro()
+            
+
 
     # método para crear el muro de ladrillos
     def crear_muro(self):
@@ -128,25 +135,46 @@ class Partida(Escena):
         for fila in range(num_filas):
             puntos = (num_filas - fila)*10
             for columna in range(num_columnas):
-                self.ladrillo = Ladrillo(fila, columna,puntos)
+                self.ladrillo = Ladrillo(fila, columna, puntos)
                 margen_x = (ANCHO - self.ladrillo.image.get_width()
                             * num_columnas) / 2
                 self.ladrillo.rect.x += margen_x
                 self.ladrillo.rect.y += margen_y
                 self.ladrillos.add(self.ladrillo)
 
-
     # método para insertar la imagen azul en el fondo de la partida
+
     def pintar_fondo(self):
         self.pantalla.blit(self.fondo, (0, 0))
 
+    def comprobar_record(self):
+        records = Records()
+        records.cargar_records()
+        min_record = records.puntuacion_menor()
+        if min_record < self.marcador.valor:
+            # hay record, entramos en el bucle del input
+            inputbox = InputBox(self.pantalla)
+            nombre = inputbox.get_text()
+            print(records.game_records)
+            records.insertar_record(nombre, self.marcador.valor)
+            records.guardar_records()
+
 
 class HallOfFame(Escena):
+    def __init__(self, pantalla: pg.Surface):
+        super().__init__(pantalla)
+        bg_file = os.path.join("resources", "images", "background.jpg")
+        self.fondo = pg.image.load(bg_file)
+        self.records = Records()
+
     def bucle_principal(self):
         salir = False
         while not salir:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     pg.quit()
-            self.pantalla.fill((0, 0, 99))
+            self.pintar_fondo()
             pg.display.flip()
+
+    def pintar_fondo(self):
+        self.pantalla.blit(self.fondo, (0, 0))

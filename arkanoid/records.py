@@ -45,7 +45,7 @@ class Records:
         Devuelve un entero con el valor de puntos de la última
         posición del listado de records.
         """
-        return self.game_records[-1]
+        return int(self.game_records[-1][1])
 
     def guardar_records(self):
         """
@@ -62,7 +62,7 @@ class Records:
         """
         carga el archivo de records si existe.
         """
-        with open(self.file_path, mode="w") as records_file:
+        with open(self.file_path, mode="r") as records_file:
             records_reader = csv.reader(
                 records_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
             contador_lineas = 0

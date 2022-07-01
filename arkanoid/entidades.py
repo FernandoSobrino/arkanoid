@@ -3,7 +3,7 @@ import os
 import pygame as pg
 from pygame.sprite import Sprite
 
-from . import ALTO, ALTO_MARCADORES, ANCHO, FPS, COLOR_BLANCO, MARGEN_LATERAL
+from . import ALTO, ANCHO, FPS, COLOR_BLANCO, MARGEN_LATERAL, PUNTOS_PARTIDA
 
 
 class Raqueta(Sprite):
@@ -53,6 +53,7 @@ class Raqueta(Sprite):
 
 
 class Ladrillo(Sprite):
+    puntuacion = PUNTOS_PARTIDA
     def __init__(self, fila, columna,puntuacion):
         super().__init__()
 
@@ -62,6 +63,7 @@ class Ladrillo(Sprite):
         ancho_ladrillo = self.image.get_width()
         alto_ladrillo = self.image.get_height()
         self.puntos = puntuacion
+        
         self.rect = self.image.get_rect(
             x=columna*ancho_ladrillo, y=fila*alto_ladrillo)
 
