@@ -1,5 +1,4 @@
 import os
-
 import pygame as pg
 
 from inputbox.inputbox import InputBox
@@ -7,6 +6,7 @@ from inputbox.inputbox import InputBox
 from . import ANCHO, ALTO, COLOR_BLANCO, COLOR_FONDO_PORTADA, FPS, PUNTOS_PARTIDA, VIDAS
 from .entidades import ContadorVidas, Ladrillo, Marcador, Pelota, Raqueta
 from .records import Records
+
 
 
 class Escena:
@@ -166,6 +166,9 @@ class HallOfFame(Escena):
         bg_file = os.path.join("resources", "images", "background.jpg")
         self.fondo = pg.image.load(bg_file)
         self.records = Records()
+        self.records.cargar_records()
+        font_file = os.path.join("resources", "fonts", "CabinSketch-Bold.ttf")
+        self.tipografia = pg.font.Font(font_file, 30)
 
     def bucle_principal(self):
         salir = False
@@ -174,7 +177,18 @@ class HallOfFame(Escena):
                 if event.type == pg.QUIT:
                     pg.quit()
             self.pintar_fondo()
+            self.records.cargar_records()
+            for records in range(len(self.records.game_records)):
+                texto_render = self.tipografia.render(
+                    str(self.records.game_records[records]), True, COLOR_BLANCO)
+                pos_x = ANCHO/2 - texto_render.get_width()
+                pos_y = records*texto_render.get_height()
+                self.pantalla.blit(texto_render, (pos_x, pos_y))
+            
+            
             pg.display.flip()
 
     def pintar_fondo(self):
         self.pantalla.blit(self.fondo, (0, 0))
+
+    

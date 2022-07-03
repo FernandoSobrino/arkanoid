@@ -1,6 +1,10 @@
 import csv
 import os
 
+
+from . import ANCHO,COLOR_BLANCO
+import pygame as pg
+
 MAX_RECORDS = 10
 
 
@@ -9,7 +13,7 @@ class Records:
     filename = "records.csv"
     dir_path = os.path.dirname(
         os.path.realpath(__file__)
-    ) 
+    )
     # __file__ = correponde con el path del archivo actual (records.py)
 
     def __init__(self):
@@ -17,6 +21,9 @@ class Records:
         En el constructor, quiero crear los atributos para la ruta y
         comprobar si el archivo existe.
         """
+        pg.font.init()
+        font_file = os.path.join("resources", "fonts", "CabinSketch-Bold.ttf")
+        self.tipografia = pg.font.Font(font_file, 20)
         self.game_records = []
         self.data_path = os.path.join(
             os.path.dirname(self.dir_path), "data")
@@ -37,8 +44,8 @@ class Records:
         La lista de records se debe quedar ordenada. Es decir,
         se inserta en la posición que toca ordenando de mayor a menor.
         """
-        self.game_records.append([nombre,puntos])
-        self.game_records.sort(key=lambda item: item[1],reverse=True)
+        self.game_records.append([nombre, puntos])
+        self.game_records.sort(key=lambda item: item[1], reverse=True)
 
     def puntuacion_menor(self):
         """
@@ -71,7 +78,12 @@ class Records:
                 contador_lineas += 1
                 if contador_lineas == 1:
                     continue
-                self.game_records.append([linea[0],linea[1]])
+                self.game_records.append([linea[0], linea[1]])
+
+   
+        
+
+        
         
 
     def reset(self):
