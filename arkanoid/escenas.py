@@ -8,7 +8,6 @@ from .entidades import ContadorVidas, Ladrillo, Marcador, Pelota, Raqueta
 from .records import Records
 
 
-
 class Escena:
     def __init__(self, pantalla: pg.Surface):
         self.pantalla = pantalla
@@ -121,10 +120,9 @@ class Partida(Escena):
             # volver a pintar el muro cuando se acaban los ladrillos
             if len(self.ladrillos.sprites()) == 0:
                 self.crear_muro()
-            
-
 
     # método para crear el muro de ladrillos
+
     def crear_muro(self):
         num_filas = 5
         num_columnas = 6
@@ -161,6 +159,7 @@ class Partida(Escena):
 
 
 class HallOfFame(Escena):
+
     def __init__(self, pantalla: pg.Surface):
         super().__init__(pantalla)
         bg_file = os.path.join("resources", "images", "background.jpg")
@@ -168,9 +167,10 @@ class HallOfFame(Escena):
         self.records = Records()
         self.records.cargar_records()
         font_file = os.path.join("resources", "fonts", "CabinSketch-Bold.ttf")
-        self.tipografia = pg.font.Font(font_file, 30)
+        self.tipografia = pg.font.Font(font_file, 20)
 
     def bucle_principal(self):
+        borde = 100
         salir = False
         while not salir:
             for event in pg.event.get():
@@ -182,13 +182,10 @@ class HallOfFame(Escena):
                 texto_render = self.tipografia.render(
                     str(self.records.game_records[records]), True, COLOR_BLANCO)
                 pos_x = ANCHO/2 - texto_render.get_width()
-                pos_y = records*texto_render.get_height()
+                pos_y = records*texto_render.get_height() + borde*2
                 self.pantalla.blit(texto_render, (pos_x, pos_y))
-            
-            
+
             pg.display.flip()
 
     def pintar_fondo(self):
         self.pantalla.blit(self.fondo, (0, 0))
-
-    
